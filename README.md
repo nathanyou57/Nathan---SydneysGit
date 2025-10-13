@@ -1,3 +1,16 @@
+# Nathan'sUpdate
+I added the GitWrapper class for final testing purposes on Mr. Theiss' side. 
+
+How I implemented the commit method:
+1) read the staged entries and built a root tree.
+2) read HEAD to get the parent commit hash.
+3) assemble commit text with tree, parent, author, date, summary.
+4) SHA-1 the commit text to get commitHash.
+5) write the commit object and update HEAD with commitHash.
+
+
+
+# ==============================================================
 # ME WHEN I CODE BY MYSELF:
 > ## a=b+c;
 

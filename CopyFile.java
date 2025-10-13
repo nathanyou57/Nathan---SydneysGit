@@ -221,14 +221,18 @@ public class CopyFile {
         }
     }
 
-    public void makeTree(String workingIndex) throws IOException, NoSuchAlgorithmException {
+    public String makeTree(String workingIndex) throws IOException, NoSuchAlgorithmException {
         // find the longest path.
         // this will be a line in the index, like blob h4sh file/name.
         String longestPath = longestPath(workingIndex.split("\n"));
 
         // if we're done, stop
-        if (!longestPath.contains("/"))
-            return;
+        if (!longestPath.contains("/")) {
+        // Build and return the root tree
+            String rootTreeSHA = genSha1(workingIndex);
+            writeFile(directory + "/git/objects/" + rootTreeSHA, workingIndex);
+            return rootTreeSHA;
+        }
 
         // define the path of the parent folder of whatever the deepest file is
         String parentFolderPath = directory + "/"
@@ -286,7 +290,7 @@ public class CopyFile {
         System.out.println("Tree'd " + parentFolderPath + "!");
 
         // do it again until we're done!
-        makeTree(workingIndex);
+        return makeTree(workingIndex);
     }
 
     public int countOccurances(String str, char c) {
@@ -341,4 +345,31 @@ public class CopyFile {
             type = "blob";
         return type;
     }
+
+    public String commit(String author, String message) throws IOException, NoSuchAlgorithmException {
+        // Generate trees from the current index and get root tree hash
+        String rootTree = makeTree(Files.readString(Paths.get(directory + "/git/index")));
+        
+        // Read the parent commit from HEAD
+        String parentCommit = Files.readString(Paths.get(directory + "/git/HEAD"));
+        
+        // Build the complete commit content
+        String commitData = "tree: " + rootTree + "\n" +
+                            "parent: " + parentCommit + "\n" +
+                            "author: " + author + "\n" +
+                            "date: " + java.time.LocalDate.now() + "\n" +
+                            "summary: " + message;
+        
+        // Calculate SHA-1 of the commit
+        String commitHash = genSha1(commitData);
+        
+        // Write commit hash to HEAD file
+        Files.writeString(Paths.get(directory + "/git/HEAD"), commitHash);
+        
+        // Write commit content to objects directory
+        Files.writeString(Paths.get(directory + "/git/objects/" + commitHash), commitData);
+        
+        return commitHash;
+    }
+    
 }
