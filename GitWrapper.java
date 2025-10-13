@@ -74,7 +74,7 @@ public class GitWrapper {
     public void addRecursively(File file) throws Exception {
         // Skip unwanted directories and files
         String name = file.getName();
-        if (name.equals("git") || name.equals("src") || name.equals(".git") || name.equals("README.md")) {
+        if (name.equals("git") || name.equals("src") || name.equals(".git") || name.equals("README.md") || name.endsWith(".java")) {
             return;
         }
     
