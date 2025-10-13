@@ -91,7 +91,7 @@ public class CopyFileTester {
 
         // For Compression - to turn off compression, set as false, to turn on, set as
         // true
-        gitproj.setCompression(true);
+        gitproj.setCompression(false);
 
         // Create and fills files for practicing with sha1 later
         File f = new File("output");
